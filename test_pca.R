@@ -5,9 +5,12 @@ n<-1000 #total number of locus will be tested
 source('sim_geno_trait_k3.R')
 data<-sim_geno_trait_k3()
 Y<-data$trait
-p<-0.001 # probability
-x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
-e_x<-sum(x)/2 #expectation of x
+p<-runif(1000,0,1)
+x<-rep(0,1000)
+for (i in 1:1000) {
+  x[i]<-rbinom(n=1,size=2,prob=p[i]) #generate the x randomly with random p each time
+}
+
 
 
 
@@ -74,8 +77,11 @@ p_exp <- p_norm_ratio_rgls(z1, v = v)
 
 
 t<-rep( 0 , 10000)
+#generate t_i for 10000 times
 for (i in 1:10000){
-  x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
+  for (j in 1:1000){
+  x[j]<-rbinom(n=1,size=2,prob=p[j]) #generate the x randomly with random probability
+  }
   numerator_t<- mean(x*(Y-mean_y)) # numerator of t_i
   denominator_t<-sqrt(2 * mean(x*(2-x))) #denominator of t_i
   t[i]<-numerator_t/denominator_t * sqrt(n / sigma_y)
@@ -86,3 +92,4 @@ hist(t)
 
 qqnorm(t, pch = 1, frame = FALSE) #, ylim = c(-500,500))
 qqline(t, col = "steelblue", lwd = 2)
+
