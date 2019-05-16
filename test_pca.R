@@ -5,14 +5,14 @@ n<-1000 #total number of locus will be tested
 source('sim_geno_trait_k3.R')
 data<-sim_geno_trait_k3()
 Y<-data$trait
-p<-0.5 # probability
+p<-0.001 # probability
 x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
 e_x<-sum(x)/2 #expectation of x
 
 
 
 mean_y<-mean(Y) #mean of y
-sigma_y<-sum((Y-mean_y)^2) #calculate the sigma^2 for y
+sigma_y<-mean((Y-mean_y)^2) #calculate the sigma^2 for y
 sigma_c<-(1/n) * sqrt( 1/(2*p*(1-p)) -1 ) #estimation of sigma_c
 
 A_i<-rnorm(1000, 0, 1)
@@ -29,7 +29,7 @@ qqnorm(ratio, pch = 1, frame = FALSE) #, ylim = c(-500,500))
 qqline(ratio, col = "steelblue", lwd = 2)
 
 ratio <- sort(ratio)
-plot(ratio, dcauchy(x, location = 0, scale = 1), type="l",  lwd=2,
+plot(ratio, dcauchy(ratio, location = 0, scale = 1), type="l",  lwd=2,
      main="", xlab="x", ylab="Probability Density") #, yaxt='n')
 lines(density( ratio / sqrt(mean(ratio^2) )), lty =2, col = 'red')
 
@@ -73,13 +73,16 @@ p_exp <- p_norm_ratio_rgls(z1, v = v)
 #intergation converges to infinity becasue of the low value of v
 
 
-t<-rep( 0 ,1:10000)
+t<-rep( 0 , 10000)
 for (i in 1:10000){
   x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
-  numerator_t<-(1/n)*sum(x*(y-mean_y)) # numerator of t_i
-  denominator_t<-sqrt((2/n)*sum(x*(2-x))) #denominator of t_i
-  t[i]<-numerator_t/denominator_t
+  numerator_t<- mean(x*(Y-mean_y)) # numerator of t_i
+  denominator_t<-sqrt(2 * mean(x*(2-x))) #denominator of t_i
+  t[i]<-numerator_t/denominator_t * sqrt(n / sigma_y)
 }
 
 t<-sort(t)
 hist(t)
+
+qqnorm(t, pch = 1, frame = FALSE) #, ylim = c(-500,500))
+qqline(t, col = "steelblue", lwd = 2)
