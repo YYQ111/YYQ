@@ -1,13 +1,14 @@
-#######
 n<-1000 #total number of locus will be tested
 
 
 #do the loop to generate 1000 x_i
-
+source('sim_geno_trait_k3.R')
+data<-sim_geno_trait_k3()
+Y<-data$trait
 p<-0.5 # probability
 x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
 e_x<-sum(x)/2 #expectation of x
-X[i]<-e_x
+
 
 
 mean_y<-mean(Y) #mean of y
@@ -27,8 +28,8 @@ hist(ratio) #, xlim = c(-500,500)) #histgram loos not so good
 qqnorm(ratio, pch = 1, frame = FALSE) #, ylim = c(-500,500))
 qqline(ratio, col = "steelblue", lwd = 2)
 
-x <- sort(ratio)
-plot(x, dcauchy(x, location = 0, scale = 1), type="l",  lwd=2,
+ratio <- sort(ratio)
+plot(ratio, dcauchy(x, location = 0, scale = 1), type="l",  lwd=2,
      main="", xlab="x", ylab="Probability Density") #, yaxt='n')
 lines(density( ratio / sqrt(mean(ratio^2) )), lty =2, col = 'red')
 
@@ -43,6 +44,7 @@ n <- 1000
 
 x1 <- rnorm( n )
 # denominators are Normal with mean 1 and specified variance
+v<-sum(x*(2-x))/(2*n) #
 y1 <- rnorm( n, mean = 1, sd = sqrt(v) )
 # the final ratio statistics we want
 z1 <- x1 / y1
@@ -71,15 +73,13 @@ p_exp <- p_norm_ratio_rgls(z1, v = v)
 #intergation converges to infinity becasue of the low value of v
 
 
-t<-rep(0,1:10000)
+t<-rep( 0 ,1:10000)
 for (i in 1:10000){
-x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
-numerator_t<-(1/n)*sum(x*(y-mean_y)) # numerator of t_i
-denominator_t<-sqrt((2/n)*sum(x*(2-x))) #denominator of t_i
-t[i]<-numerator_t/denominator_t
+  x<-rbinom(n=1000,size=2,prob=p) #generate the x randomly
+  numerator_t<-(1/n)*sum(x*(y-mean_y)) # numerator of t_i
+  denominator_t<-sqrt((2/n)*sum(x*(2-x))) #denominator of t_i
+  t[i]<-numerator_t/denominator_t
 }
 
 t<-sort(t)
 hist(t)
-
-
